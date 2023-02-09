@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} Bargain | Find the best deals {% endblock %}
+
+{% block content %} 
+   <div id="main-container" class="mt-5 text-center text-secondary">
+       <h1 class="display-6">
+           Find the best deals from Flipkart.com and Amazon.in
+       </h1>
+
+       <div id="search-deal" class="mt-5 hstack gap-2 justify-content-center" >
+           <input type="text" id="query">
+           <button class="btn btn-primary" type="button">Find!</button>
+       </div>
+   </div>
+{% endblock %}
