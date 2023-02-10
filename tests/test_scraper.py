@@ -8,10 +8,10 @@ from scrapers import scraper
 class TestAmazonScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.AmazonScraper()
-        # self.__fetch_data()
+        self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('seiko watches for men')
+        data = self.scraper.fetch_data('ikigai')
         self.assertEqual(data.status_code, 200)
         with open('amazon_tmp.html', 'w') as amazon_tmp:
             amazon_tmp.write(data.text)
@@ -31,4 +31,7 @@ class TestAmazonScraper(unittest.TestCase):
             soup = self.scraper.soup(amazon_data.read().strip())
             items = self.scraper.get_items(soup)
             self.assertGreater(len(items), 0)
+            for item in items:
+                for value in item.get().values():
+                    self.assertGreater(len(value), 0)
 
