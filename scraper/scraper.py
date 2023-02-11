@@ -74,7 +74,8 @@ class AmazonScraper(Scraper):
                 result_rating = None
             try: 
                 result_reviews = result.find(
-                        class_='a-size-base s-underline-text').get_text()
+                        class_='a-size-base s-underline-text'
+                        ).get_text().strip('(').strip(')')
             except AttributeError:
                 result_reviews = None
 

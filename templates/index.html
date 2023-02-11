@@ -3,14 +3,13 @@
 {% block title %} Bargain | Find the best deals {% endblock %}
 
 {% block content %} 
-   <div id="main-container" class="mt-5 text-center text-secondary">
-       <h1 class="display-6">
-           Find the best deals from Flipkart.com and Amazon.in
-       </h1>
+    <div class="container text-center">
+        <h1 class="display-5 mt-3">Bargain - Find the best deals!</h1>
+        <p class="lead">Find the best deals from Amazon.in and Flipkart.com</p>
 
-       <div id="search-deal" class="mt-5 hstack gap-2 justify-content-center" >
-           <input type="text" id="query">
-           <button class="btn btn-primary" type="button">Find!</button>
-       </div>
-   </div>
+        <form id="search-form" class="d-inline-flex flex-row gap-2 justify-content-center mt-4">
+            <input type="text" id="query" class="form-control">
+            <input type="button" value="Search" class="btn btn-dark">
+        </form>
+    </div>
 {% endblock %}
