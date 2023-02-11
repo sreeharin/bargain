@@ -1,7 +1,8 @@
-import requests
 import re
 from urllib import parse
+from enum import IntFlag, auto
 from bs4 import BeautifulSoup
+import requests
 
 class Result:
     def __init__(self, name: str, img: str, 
@@ -25,6 +26,11 @@ class Result:
                 'url': self.url,
                 }
         return results_dict
+
+class FlipkartDivClass(IntFlag):
+    '''Helper class for FlipkartScraper'''
+    CLASS_1 = auto()
+    CLASS_2 = auto()
 
 
 class Scraper:
@@ -79,4 +85,41 @@ class AmazonScraper(Scraper):
 
 class FlipkartScraper(Scraper):
     def __init__(self):
-        pass
+        FLIPKART_URL = 'https://www.flipkart.com/search?q='
+        super().__init__(FLIPKART_URL)
+
+    def get_items(self, soup: BeautifulSoup, limit: int = 3) -> list[Result]:
+        items = []
+
+        # Flipkart has two css classes for displaying products
+        DIV_CLASS1 = '_1xHGtK _373qXS'
+        DIV_CLASS2 = '_4ddWXP'
+        selected_class = FlipkartDivClass.CLASS_1
+
+        search_results = soup.find_all(class_=DIV_CLASS1, limit=limit)
+        if search_results == []:
+            search_results = soup.find_all(class_=DIV_CLASS2, limit=limit)
+            selected_class = FlipkartDivClass.CLASS_2
+
+        match selected_class:
+            case FlipkartDivClass.CLASS_1:
+                print('class 1')
+            case FlipkartDivClass.CLASS_2:
+                ITEM_CLASS = 's1Q9rs'
+                ITEM_PRICE = '_30jeq3'
+                ITEM_REVIEWS = '_2_R_DZ'
+                ITEM_RATING = '_3LWZlK'
+                ITEM_IMG = '_396cs4'
+
+        for result in search_results:
+            item = result.find('a', class_=ITEM_CLASS)
+            result_name = item.get('title')
+            result_img = result.find('img', class_=ITEM_IMG).get('src')
+            result_url = item.get('href')
+            result_price = result.find(class_=ITEM_PRICE).get_text()
+            result_review = result.find(
+                    class_=ITEM_REVIEWS).get_text().strip('(').strip(')')
+            result_rating = result.find(class_=ITEM_RATING).next_element
+            print(result_name)
+
+        return items
