@@ -40,10 +40,10 @@ class TestAmazonScraper(unittest.TestCase):
 class TestFlipkartScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.FlipkartScraper()
-        # self.__fetch_data()
+        self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('flute')
+        data = self.scraper.fetch_data('seiko watches men')
         self.assertEqual(data.status_code, 200)
         with open('flipkart_tmp.html', 'w') as flipkart_tmp:
             flipkart_tmp.write(data.text)

@@ -63,6 +63,9 @@ class AmazonScraper(Scraper):
             result_name = result.find(class_='a-text-normal').span.get_text()
             result_img = result.find(class_='s-image').get('src')
             result_price = result.find(class_='a-price-whole').get_text()
+            result_url = result.find(
+                    class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'
+                    ).get('href')
             # Some products may not have reviews or ratings
             try:
                 result_rating = result.find(class_='a-icon-alt').string
@@ -73,9 +76,6 @@ class AmazonScraper(Scraper):
                         class_='a-size-base s-underline-text').get_text()
             except AttributeError:
                 result_reviews = None
-            result_url = result.find(
-                    class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'
-                    ).get('href')
 
             items.append(Result(result_name, result_img, 
                                 result_price, result_reviews,
@@ -88,10 +88,11 @@ class FlipkartScraper(Scraper):
         FLIPKART_URL = 'https://www.flipkart.com/search?q='
         super().__init__(FLIPKART_URL)
 
-    def get_items(self, soup: BeautifulSoup, limit: int = 3) -> list[Result]:
+    def get_items(self, soup: BeautifulSoup, limit: int = 10) -> list[Result]:
         items = []
 
-        # Flipkart has two css classes for displaying products
+        # Unlike Amazon.in Flipkart.com has two css classes for showing results
+        # DIV_CLASS1 doesn't contain ratings and reviews
         DIV_CLASS1 = '_1xHGtK _373qXS'
         DIV_CLASS2 = '_4ddWXP'
         selected_class = FlipkartDivClass.CLASS_1
@@ -100,26 +101,46 @@ class FlipkartScraper(Scraper):
         if search_results == []:
             search_results = soup.find_all(class_=DIV_CLASS2, limit=limit)
             selected_class = FlipkartDivClass.CLASS_2
-
+        
+        ITEM_PRICE = '_30jeq3'
         match selected_class:
             case FlipkartDivClass.CLASS_1:
-                print('class 1')
+                # Generic items don't have reviews and rating
+                ITEM_CLASS = 'IRpwTa' 
+                ITEM_IMG = '_2r_T1I' 
+                ITEM_REVIEWS = None
+                ITEM_RATING = None
             case FlipkartDivClass.CLASS_2:
                 ITEM_CLASS = 's1Q9rs'
-                ITEM_PRICE = '_30jeq3'
+                ITEM_IMG = '_396cs4'
                 ITEM_REVIEWS = '_2_R_DZ'
                 ITEM_RATING = '_3LWZlK'
-                ITEM_IMG = '_396cs4'
 
         for result in search_results:
             item = result.find('a', class_=ITEM_CLASS)
             result_name = item.get('title')
             result_img = result.find('img', class_=ITEM_IMG).get('src')
-            result_url = item.get('href')
             result_price = result.find(class_=ITEM_PRICE).get_text()
-            result_review = result.find(
-                    class_=ITEM_REVIEWS).get_text().strip('(').strip(')')
-            result_rating = result.find(class_=ITEM_RATING).next_element
-            print(result_name)
+            result_url = item.get('href')
+            result_rating = None
+            result_reviews = None
+            if ITEM_RATING:
+                try:
+                    result_rating = result.find(
+                            class_=ITEM_RATING).next_element
+                except AttributeError:
+                    continue
 
+            if ITEM_REVIEWS:
+                try:
+                    result_reviews = result.find(
+                            class_=ITEM_REVIEWS
+                            ).get_text().strip('(').strip(')')
+                except AttributeError:
+                    continue
+
+            items.append(Result(result_name, result_img, 
+                                result_price, result_reviews,
+                                result_rating, result_url))
         return items
+
