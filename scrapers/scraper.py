@@ -5,14 +5,14 @@ from bs4 import BeautifulSoup
 
 class Result:
     def __init__(self, name: str, img: str, 
-                 price: str, url: str, 
-                 reviews: str, rating: str):
+                 price: str, reviews: str, 
+                 rating: str, url: str):
         self.name = name,
         self.img = img,
         self.price= price,
-        self.url = url
         self.reviews = reviews
         self.rating = rating
+        self.url = url
 
     def get(self) -> dict:
         results_dict = {
@@ -46,31 +46,32 @@ class AmazonScraper(Scraper):
         AMAZON_URL = 'https://www.amazon.in/s?k='
         super().__init__(AMAZON_URL)
 
-    def get_items(self, soup: BeautifulSoup, limit: int = 1) -> list[Result]:
+    def get_items(self, soup: BeautifulSoup, limit: int = 10) -> list[Result]:
+        '''Retrieve data from soup object'''
         items = []
-        DIV_CLASS = 'sg-col-inner'
-        arr = soup.find_all(class_=DIV_CLASS, limit=limit) 
-        print(arr)
+        search_results = soup.find_all(
+                attrs={'data-component-type': 's-search-result'}, limit=limit)
 
-        for item in arr:
-            name = item.find(class_='a-size-base-plus a-color-base a-text-normal')
-            price = item.find(class_='a-price-whole')
-            img = item.find(class_='s-image')
-            reviews = item.find(class_='a-size-base s-underline-text')
-            rating_div = item.find(class_='a-icon-alt')
-            if name and price and img and reviews and rating_div:
-                result_name = name.string
-                result_price = price.get_text().strip('.')
-                result_img = img.get('src')
-                result_url = item.a.get('href')
-                result_reviews = reviews.string
-                result_rating = rating_div.string.split(' ')[0]
+        for result in search_results:
+            result_name = result.find(class_='a-text-normal').span.get_text()
+            result_img = result.find(class_='s-image').get('src')
+            result_price = result.find(class_='a-price-whole').get_text()
+            # Some products may not have reviews or ratings
+            try:
+                result_rating = result.find(class_='a-icon-alt').string
+            except AttributeError:
+                result_rating = None
+            try: 
+                result_reviews = result.find(
+                        class_='a-size-base s-underline-text').get_text()
+            except AttributeError:
+                result_reviews = None
+            result_url = result.find(class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal').get('href')
 
-                items.append(
-                        Result(result_name, result_img, 
-                               result_price, result_url,
-                               result_reviews, result_rating)
-                        )
+            items.append(Result(result_name, result_img, 
+                                result_price, result_reviews,
+                                result_rating, result_url))
+
         return items
 
 

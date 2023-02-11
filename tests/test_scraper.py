@@ -1,6 +1,5 @@
 import sys
 import unittest
-from random import choice
 
 sys.path.append('../')
 from scrapers import scraper 
@@ -11,7 +10,7 @@ class TestAmazonScraper(unittest.TestCase):
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('ikigai')
+        data = self.scraper.fetch_data('sunglasses for men')
         self.assertEqual(data.status_code, 200)
         with open('amazon_tmp.html', 'w') as amazon_tmp:
             amazon_tmp.write(data.text)
@@ -32,6 +31,12 @@ class TestAmazonScraper(unittest.TestCase):
             items = self.scraper.get_items(soup)
             self.assertGreater(len(items), 0)
             for item in items:
-                for value in item.get().values():
-                    self.assertGreater(len(value), 0)
+                '''
+                Not testing reviews and rating since some products don't 
+                have reviews or ratings
+                '''
+                self.assertGreater(len(item.name), 0)
+                self.assertGreater(len(item.img), 0)
+                self.assertGreater(len(item.price), 0)
+                self.assertGreater(len(item.url), 0)
 
