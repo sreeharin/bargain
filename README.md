@@ -1,4 +1,4 @@
-# Bargain 
+# Bargain 🤑
 Find the best deal from Amazon.in and Flipkart.com
 
 ## Overview
