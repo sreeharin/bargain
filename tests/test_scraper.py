@@ -10,7 +10,7 @@ class TestAmazonScraper(unittest.TestCase):
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('sunglasses for men')
+        data = self.scraper.fetch_data('bedsheets')
         self.assertEqual(data.status_code, 200)
         with open('amazon_tmp.html', 'w') as amazon_tmp:
             amazon_tmp.write(data.text)
@@ -35,8 +35,8 @@ class TestAmazonScraper(unittest.TestCase):
                 Not testing reviews and rating since some products don't 
                 have reviews or ratings
                 '''
-                self.assertGreater(len(item.name), 0)
-                self.assertGreater(len(item.img), 0)
-                self.assertGreater(len(item.price), 0)
+                self.assertGreater(len(''.join(item.name)), 0)
+                self.assertGreater(len(''.join(item.img)), 0)
+                self.assertGreater(len(''.join(item.price)), 0)
                 self.assertGreater(len(item.url), 0)
 

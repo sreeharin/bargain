@@ -15,13 +15,14 @@ class Result:
         self.url = url
 
     def get(self) -> dict:
+        # self.name, sef.img, self.price returns tuple hence `join` is used
         results_dict = {
-                'name': self.name[0],
-                'img': self.img[0],
-                'price': self.price[0],
-                'url': self.url,
+                'name': ''.join(self.name),
+                'img': ''.join(self.img),
+                'price': ''.join(self.price),
                 'reviews': self.reviews,
                 'rating': self.rating,
+                'url': self.url,
                 }
         return results_dict
 
@@ -66,12 +67,13 @@ class AmazonScraper(Scraper):
                         class_='a-size-base s-underline-text').get_text()
             except AttributeError:
                 result_reviews = None
-            result_url = result.find(class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal').get('href')
+            result_url = result.find(
+                    class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'
+                    ).get('href')
 
             items.append(Result(result_name, result_img, 
                                 result_price, result_reviews,
                                 result_rating, result_url))
-
         return items
 
 
