@@ -60,7 +60,8 @@ class AmazonScraper(Scraper):
                 attrs={'data-component-type': 's-search-result'}, limit=limit)
 
         for result in search_results:
-            result_name = result.find(class_='a-text-normal').span.get_text()
+            result_name = result.find(
+                    'span', class_='a-text-normal').get_text()
             result_img = result.find(class_='s-image').get('src')
             result_price = result.find(class_='a-price-whole').get_text()
             result_url = result.find(

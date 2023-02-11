@@ -1,16 +1,20 @@
 import sys
 import unittest
+from random import choice
 
 sys.path.append('../')
-from scrapers import scraper 
+from scraper import scraper 
 
 class TestAmazonScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.AmazonScraper()
+        self.query = choice(
+                ['trading books', 'men sunglasses', 
+                 'casio watches for men', 'the alchemist'])
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('trading books')
+        data = self.scraper.fetch_data(self.query)
         self.assertEqual(data.status_code, 200)
         with open('amazon_tmp.html', 'w') as amazon_tmp:
             amazon_tmp.write(data.text)
@@ -37,13 +41,17 @@ class TestAmazonScraper(unittest.TestCase):
                 self.assertGreater(len(''.join(item.price)), 0)
                 self.assertGreater(len(item.url), 0)
 
+
 class TestFlipkartScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.FlipkartScraper()
+        self.query = choice(
+                ['trading books', 'men sunglasses', 
+                 'casio watches for men', 'the alchemist'])
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('seiko watches men')
+        data = self.scraper.fetch_data(self.query)
         self.assertEqual(data.status_code, 200)
         with open('flipkart_tmp.html', 'w') as flipkart_tmp:
             flipkart_tmp.write(data.text)
