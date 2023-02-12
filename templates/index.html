@@ -7,9 +7,63 @@
         <h1 class="display-5 mt-3">Bargain - Find the best deals!</h1>
         <p class="lead">Find the best deals from Amazon.in and Flipkart.com</p>
 
+        <div id="alert-placeholder"></div>
+
         <form id="search-form" class="d-inline-flex flex-row gap-2 justify-content-center mt-4">
-            <input type="text" id="query" class="form-control">
-            <input type="button" value="Search" class="btn btn-dark">
+            <input type="text" id="query" class="form-control" required>
+            <button type="submit" id="submit-btn" class="btn btn-sm btn-dark">Search</button>
         </form>
+
+        <div id="results" class="container mt-4">
+        </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function returnCard(img, name){
+            return `
+                    <div class="card" style="width: 100px">
+                        <img src="${img}" class="card-img-top" height="100" width="100">
+                        <div class="card-body">
+                            <h5 card-title>${name}</h5>
+                            <p class="card-text">Something..</p>
+                        </div>
+                    </div>
+                `;
+        }
+
+        $(document).ready(function(){
+
+
+            $('#search-form').submit(function(event){
+                var query = $('#query').val();
+                $('#submit-btn').prop("disabled", true);
+                $('#submit-btn').html(
+                    `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>`
+                );
+                $.getJSON('/best-deals/'+query, function(data){
+                    var amazon_results = data['amazon'];
+                    var flipkart_results = data['flipkart'];
+
+                    
+                    for(var idx = 0; idx < amazon_results.length; idx++){
+                        var amazon_item = amazon_results[idx];
+                        $('#results').append(returnCard(amazon_item['img'], amazon_item['name']));
+                    }
+
+                }).always(function(data){
+                    $('#submit-btn').prop("disabled", false);
+                    $('#submit-btn').html(`Search`);
+                    $("form").trigger("reset");
+                }).fail(function(data){
+                    $("#alert-placeholder").html(
+                        `
+                           <div class="alert alert-danger alert-dismissible fade show w-25 mx-auto" role="alert"><strong>Error fetching results </strong><buttoni type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button></div>`
+                    );
+                });
+                event.preventDefault();
+            });
+        }); 
+    </script>
 {% endblock %}

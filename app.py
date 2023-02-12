@@ -12,7 +12,6 @@ def best_deals(query):
     amazon_scraper = AmazonScraper()
     flipkart_scraper = FlipkartScraper()
 
-    # try:
     amazon_data = amazon_scraper.fetch_data(query)
     amazon_soup = amazon_scraper.soup(amazon_data.text)
     amazon_results = amazon_scraper.get_items(amazon_soup)
@@ -30,9 +29,6 @@ def best_deals(query):
         results['flipkart'].append(result.get())
 
     return results, 200
-    # except AttributeError as err:
-        # print(err)
-        # return '', 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

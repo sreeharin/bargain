@@ -23,9 +23,9 @@ class Result:
     def get(self) -> dict:
         # self.name, sef.img, self.price returns tuple hence `join` is used
         results_dict = {
-                'name': self.name,
+                'name': ''.join(self.name),
                 'img': ''.join(self.img),
-                'price': self.price,
+                'price': ''.join(self.price),
                 'reviews': self.reviews,
                 'rating': self.rating,
                 'url': self.url,
