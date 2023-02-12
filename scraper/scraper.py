@@ -72,8 +72,7 @@ class AmazonScraper(Scraper):
             result_name = result.find(
                     'span', class_='a-text-normal').string
             result_img = result.find(class_='s-image').get('src')
-            result_price = result.find(
-                    'span', class_='a-price-whole').string
+            result_price = result.find(class_='a-price-whole').next_element
             result_url = result.find(
                     class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'
                     ).get('href')

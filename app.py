@@ -13,9 +13,9 @@ def best_deals(query):
     flipkart_scraper = FlipkartScraper()
 
     # try:
-    # amazon_data = amazon_scraper.fetch_data(query)
-    # amazon_soup = amazon_scraper.soup(amazon_data.text)
-    # amazon_results = amazon_scraper.get_items(amazon_soup)
+    amazon_data = amazon_scraper.fetch_data(query)
+    amazon_soup = amazon_scraper.soup(amazon_data.text)
+    amazon_results = amazon_scraper.get_items(amazon_soup)
 
     flipkart_data = flipkart_scraper.fetch_data(query)
     flipkart_soup = flipkart_scraper.soup(flipkart_data.text)
@@ -23,8 +23,8 @@ def best_deals(query):
 
     results = {'amazon': [], 'flipkart': []}
 
-    # for result in amazon_results:
-        # results['amazon'].append(result.get())
+    for result in amazon_results:
+        results['amazon'].append(result.get())
 
     for result in flipkart_results:
         results['flipkart'].append(result.get())
