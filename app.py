@@ -12,26 +12,27 @@ def best_deals(query):
     amazon_scraper = AmazonScraper()
     flipkart_scraper = FlipkartScraper()
 
-    try:
-        amazon_data = amazon_scraper.fetch_data(query)
-        amazon_soup = amazon_scraper.soup(amazon_data.text)
-        amazon_results = amazon_scraper.get_items(amazon_soup)
+    # try:
+    # amazon_data = amazon_scraper.fetch_data(query)
+    # amazon_soup = amazon_scraper.soup(amazon_data.text)
+    # amazon_results = amazon_scraper.get_items(amazon_soup)
 
-        flipkart_data = flipkart_scraper.fetch_data(query)
-        flipkart_soup = flipkart_scraper.soup(flipkart_data.text)
-        flipkart_results = flipkart_scraper.get_items(flipkart_soup)
+    flipkart_data = flipkart_scraper.fetch_data(query)
+    flipkart_soup = flipkart_scraper.soup(flipkart_data.text)
+    flipkart_results = flipkart_scraper.get_items(flipkart_soup)
 
-        results = {'amazon': [], 'flipkart': []}
+    results = {'amazon': [], 'flipkart': []}
 
-        for result in amazon_results:
-            results['amazon'].append(result.get())
+    # for result in amazon_results:
+        # results['amazon'].append(result.get())
 
-        for result in flipkart_results:
-            results['flipkart'].append(result.get())
+    for result in flipkart_results:
+        results['flipkart'].append(result.get())
 
-        return results, 200
-    except AttributeError:
-        return '', 500
+    return results, 200
+    # except AttributeError as err:
+        # print(err)
+        # return '', 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
