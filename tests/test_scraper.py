@@ -37,10 +37,10 @@ class TestAmazonScraper(unittest.TestCase):
                 Not testing reviews and rating since some products don't 
                 have reviews or ratings
                 '''
-                self.assertGreater(len(''.join(item.name)), 0)
-                self.assertGreater(len(''.join(item.img)), 0)
-                self.assertGreater(len(''.join(item.price)), 0)
-                self.assertGreater(len(item.url), 0)
+                self.assertGreater(len(item.get()['name']), 0)
+                self.assertGreater(len(item.get()['img']), 0)
+                self.assertGreater(len(item.get()['price']), 0)
+                self.assertGreater(len(item.get()['url']), 0)
 
 
 class TestFlipkartScraper(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestFlipkartScraper(unittest.TestCase):
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data('vellathooval stephen')
+        data = self.scraper.fetch_data(self.query)
         self.assertEqual(data.status_code, 200)
         with open('flipkart_tmp.html', 'w') as flipkart_tmp:
             flipkart_tmp.write(data.text)
@@ -75,8 +75,8 @@ class TestFlipkartScraper(unittest.TestCase):
                 Not testing reviews and rating since some products don't 
                 have reviews or ratings
                 '''
-                self.assertGreater(len(''.join(item.name)), 0)
-                self.assertGreater(len(''.join(item.img)), 0)
-                self.assertGreater(len(''.join(item.price)), 0)
-                self.assertGreater(len(item.url), 0)
+                self.assertGreater(len(item.get()['name']), 0)
+                self.assertGreater(len(item.get()['img']), 0)
+                self.assertGreater(len(item.get()['price']), 0)
+                self.assertGreater(len(item.get()['url']), 0)
 

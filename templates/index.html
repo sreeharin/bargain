@@ -14,13 +14,13 @@
             <button type="submit" id="submit-btn" class="btn btn-sm btn-dark">Search</button>
         </form>
 
-        <div id="results" class="container mt-4 text-center">
+        <div id="results" class="container mt-4">
+            <div id="results-header" class="d-flex justify-content-around mb-3">
+            </div>
             <div class="d-flex justify-content-center gap-5">
-                <div>
-                    <div id="amazon"></div>
+                <div id="amazon" class="row row-cols-2">
                 </div>
-                <div>
-                    <div id="flipkart"></div>
+                <div id="flipkart" class="row row-cols-2">
                 </div>
             </div>
         </div>
@@ -31,20 +31,15 @@
     <script type="text/javascript">
         function returnCard(name, img, price, reviews, rating, url){
             return `
-                    <!-- <div class="card mb-2" style="width: 200px; height: 200px"> -->
-                    <!--     <img src="${img}" class="card-img-top" height="50px" width="50px"> -->
-                    <!--     <div class="card-body"> -->
-                    <!--         <p class="card-title">${name}</p> -->
-                    <!--         <p class="card-text">${price}</p> -->
-
-                    <!--         <!-1- <ul class="list-group list-group-flush"> -1-> -->
-                    <!--         <!-1-     <li class="list-group-item">Price: ${price}</li> -1-> -->
-                    <!--         <!-1-     <li class="list-group-item">Rating: ${rating}</li> -1-> -->
-                    <!--         <!-1-     <li class="list-group-item">Reviews: ${reviews}</li> -1-> -->
-                    <!--         <!-1- </ul> -1-> -->
-                    <!--     </div> -->
-                    <!-- </div> -->
-                <!-- `; -->
+                <div class="col mb-4">
+                    <div class="card mx-auto" style="width: 150px">
+                        <img src="${img}" alt="" class="img-thumbnail" style="height:125px; width: 150px;">
+                        <div class="card-body">
+                            <p class="card-text text-muted fs-6">Price: ${price}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         $(document).ready(function(){
@@ -56,10 +51,12 @@
                 );
                 $('#amazon').empty();
                 $('#flipkart').empty();
+                $('#results-header').empty();
                 $.getJSON('/best-deals/'+query, function(data){
                     var amazon_results = data['amazon'];
                     var flipkart_results = data['flipkart'];
-
+                    
+                    $('#results-header').html("<h1 class='display-6 text-muted'>Amazon</h1><h1 class='display-6 text-muted'>Flipkart</h1>")
                     
                     for(var idx = 0; idx < amazon_results.length; idx++){
                         var amazon_item = amazon_results[idx];
