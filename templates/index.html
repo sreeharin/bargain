@@ -14,7 +14,15 @@
             <button type="submit" id="submit-btn" class="btn btn-sm btn-dark">Search</button>
         </form>
 
-        <div id="results" class="container mt-4">
+        <div id="results" class="container mt-4 text-center">
+            <div class="d-flex justify-content-center gap-5">
+                <div>
+                    <div id="amazon"></div>
+                </div>
+                <div>
+                    <div id="flipkart"></div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -23,14 +31,20 @@
     <script type="text/javascript">
         function returnCard(name, img, price, reviews, rating, url){
             return `
-                    <div class="card" style="width: 250px">
-                        <img src="${img}" class="card-img-top" height="100" width="100">
-                        <div class="card-body">
-                            <h5 card-title>${name}</h5>
-                            <p class="card-text">Something..</p>
-                        </div>
-                    </div>
-                `;
+                    <!-- <div class="card mb-2" style="width: 200px; height: 200px"> -->
+                    <!--     <img src="${img}" class="card-img-top" height="50px" width="50px"> -->
+                    <!--     <div class="card-body"> -->
+                    <!--         <p class="card-title">${name}</p> -->
+                    <!--         <p class="card-text">${price}</p> -->
+
+                    <!--         <!-1- <ul class="list-group list-group-flush"> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Price: ${price}</li> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Rating: ${rating}</li> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Reviews: ${reviews}</li> -1-> -->
+                    <!--         <!-1- </ul> -1-> -->
+                    <!--     </div> -->
+                    <!-- </div> -->
+                <!-- `; -->
         }
 
         $(document).ready(function(){
@@ -40,6 +54,8 @@
                 $('#submit-btn').html(
                     `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>`
                 );
+                $('#amazon').empty();
+                $('#flipkart').empty();
                 $.getJSON('/best-deals/'+query, function(data){
                     var amazon_results = data['amazon'];
                     var flipkart_results = data['flipkart'];
@@ -54,11 +70,24 @@
                         var rating = amazon_item['rating'];
                         var url = null;
 
-                        $('#results').append(
+                        $('#amazon').append(
                             returnCard(name, img, price, reviews, rating, url)
                         );
                     }
 
+                    for(var idx = 0; idx < flipkart_results.length; idx++){
+                        var flipkart_item = flipkart_results[idx];
+                        var name = flipkart_item['name'];
+                        var img = flipkart_item['img'];
+                        var price = flipkart_item['price'];
+                        var reviews = flipkart_item['reviews'];
+                        var rating = flipkart_item['rating'];
+                        var url = null;
+
+                        $('#flipkart').append(
+                            returnCard(name, img, price, reviews, rating, url)
+                        );
+                    }
                 }).always(function(data){
                     $('#submit-btn').prop("disabled", false);
                     $('#submit-btn').html(`Search`);

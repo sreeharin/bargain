@@ -154,13 +154,13 @@ class FlipkartScraper(Scraper):
                 ITEM_RATING = '_3LWZlK'
 
         for result in search_results:
-            item = result.find('a', class_=ITEM_CLASS)
-            result_name = item.get('title', None)
-            result_url = item.get('href', None)
-
             if selected_class == FlipkartDivClass.CLASS_3:
                 result_name = result.find('div', class_='_4rR01T').string
                 result_url = result.find('a', class_='_1fQZEK').get('href')
+            else:
+                item = result.find('a', class_=ITEM_CLASS)
+                result_name = item.get('title', None)
+                result_url = item.get('href', None)
 
             result_img = result.find('img', class_=ITEM_IMG).get('src')
             result_price = result.find(class_=ITEM_PRICE).get_text()
