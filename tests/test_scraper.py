@@ -10,7 +10,8 @@ class TestAmazonScraper(unittest.TestCase):
         self.scraper = scraper.AmazonScraper()
         self.query = choice(
                 ['trading books', 'men sunglasses', 
-                 'casio watches for men', 'the alchemist'])
+                 'casio watches for men', 'the alchemist',
+                 'iphone', 'samsung watches'])
         self.__fetch_data()
 
     def __fetch_data(self):
@@ -47,11 +48,12 @@ class TestFlipkartScraper(unittest.TestCase):
         self.scraper = scraper.FlipkartScraper()
         self.query = choice(
                 ['trading books', 'men sunglasses', 
-                 'casio watches for men', 'the alchemist'])
+                 'casio watches for men', 'the alchemist',
+                 'iphone', 'samsung watches'])
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data(self.query)
+        data = self.scraper.fetch_data('vellathooval stephen')
         self.assertEqual(data.status_code, 200)
         with open('flipkart_tmp.html', 'w') as flipkart_tmp:
             flipkart_tmp.write(data.text)

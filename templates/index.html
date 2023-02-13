@@ -3,14 +3,105 @@
 {% block title %} Bargain | Find the best deals {% endblock %}
 
 {% block content %} 
-   <div id="main-container" class="mt-5 text-center text-secondary">
-       <h1 class="display-6">
-           Find the best deals from Flipkart.com and Amazon.in
-       </h1>
+    <div class="container text-center">
+        <h1 class="display-5 mt-3">Bargain - Find the best deals!</h1>
+        <p class="lead">Find the best deals from Amazon.in and Flipkart.com</p>
 
-       <div id="search-deal" class="mt-5 hstack gap-2 justify-content-center" >
-           <input type="text" id="query">
-           <button class="btn btn-primary" type="button">Find!</button>
-       </div>
-   </div>
+        <div id="alert-placeholder"></div>
+
+        <form id="search-form" class="d-inline-flex flex-row gap-2 justify-content-center mt-4">
+            <input type="text" id="query" class="form-control" required>
+            <button type="submit" id="submit-btn" class="btn btn-sm btn-dark">Search</button>
+        </form>
+
+        <div id="results" class="container mt-4 text-center">
+            <div class="d-flex justify-content-center gap-5">
+                <div>
+                    <div id="amazon"></div>
+                </div>
+                <div>
+                    <div id="flipkart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function returnCard(name, img, price, reviews, rating, url){
+            return `
+                    <!-- <div class="card mb-2" style="width: 200px; height: 200px"> -->
+                    <!--     <img src="${img}" class="card-img-top" height="50px" width="50px"> -->
+                    <!--     <div class="card-body"> -->
+                    <!--         <p class="card-title">${name}</p> -->
+                    <!--         <p class="card-text">${price}</p> -->
+
+                    <!--         <!-1- <ul class="list-group list-group-flush"> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Price: ${price}</li> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Rating: ${rating}</li> -1-> -->
+                    <!--         <!-1-     <li class="list-group-item">Reviews: ${reviews}</li> -1-> -->
+                    <!--         <!-1- </ul> -1-> -->
+                    <!--     </div> -->
+                    <!-- </div> -->
+                <!-- `; -->
+        }
+
+        $(document).ready(function(){
+            $('#search-form').submit(function(event){
+                var query = $('#query').val();
+                $('#submit-btn').prop("disabled", true);
+                $('#submit-btn').html(
+                    `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>`
+                );
+                $('#amazon').empty();
+                $('#flipkart').empty();
+                $.getJSON('/best-deals/'+query, function(data){
+                    var amazon_results = data['amazon'];
+                    var flipkart_results = data['flipkart'];
+
+                    
+                    for(var idx = 0; idx < amazon_results.length; idx++){
+                        var amazon_item = amazon_results[idx];
+                        var name = amazon_item['name'];
+                        var img = amazon_item['img'];
+                        var price = amazon_item['price'];
+                        var reviews = amazon_item['reviews'];
+                        var rating = amazon_item['rating'];
+                        var url = null;
+
+                        $('#amazon').append(
+                            returnCard(name, img, price, reviews, rating, url)
+                        );
+                    }
+
+                    for(var idx = 0; idx < flipkart_results.length; idx++){
+                        var flipkart_item = flipkart_results[idx];
+                        var name = flipkart_item['name'];
+                        var img = flipkart_item['img'];
+                        var price = flipkart_item['price'];
+                        var reviews = flipkart_item['reviews'];
+                        var rating = flipkart_item['rating'];
+                        var url = null;
+
+                        $('#flipkart').append(
+                            returnCard(name, img, price, reviews, rating, url)
+                        );
+                    }
+                }).always(function(data){
+                    $('#submit-btn').prop("disabled", false);
+                    $('#submit-btn').html(`Search`);
+                    $("form").trigger("reset");
+                }).fail(function(data){
+                    $("#alert-placeholder").html(
+                        `<div class="alert alert-danger alert-dismissible fade show w-25 mx-auto" role="alert">
+                            <strong>Error fetching results </strong>
+                            <buttoni type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                        </div>`
+                    );
+                });
+                event.preventDefault();
+            });
+        }); 
+    </script>
 {% endblock %}
