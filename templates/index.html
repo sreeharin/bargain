@@ -21,9 +21,9 @@
 
 {% block script %}
     <script type="text/javascript">
-        function returnCard(img, name){
+        function returnCard(name, img, price, reviews, rating, url){
             return `
-                    <div class="card" style="width: 100px">
+                    <div class="card" style="width: 250px">
                         <img src="${img}" class="card-img-top" height="100" width="100">
                         <div class="card-body">
                             <h5 card-title>${name}</h5>
@@ -34,8 +34,6 @@
         }
 
         $(document).ready(function(){
-
-
             $('#search-form').submit(function(event){
                 var query = $('#query').val();
                 $('#submit-btn').prop("disabled", true);
@@ -49,7 +47,16 @@
                     
                     for(var idx = 0; idx < amazon_results.length; idx++){
                         var amazon_item = amazon_results[idx];
-                        $('#results').append(returnCard(amazon_item['img'], amazon_item['name']));
+                        var name = amazon_item['name'];
+                        var img = amazon_item['img'];
+                        var price = amazon_item['price'];
+                        var reviews = amazon_item['reviews'];
+                        var rating = amazon_item['rating'];
+                        var url = null;
+
+                        $('#results').append(
+                            returnCard(name, img, price, reviews, rating, url)
+                        );
                     }
 
                 }).always(function(data){
@@ -58,8 +65,10 @@
                     $("form").trigger("reset");
                 }).fail(function(data){
                     $("#alert-placeholder").html(
-                        `
-                           <div class="alert alert-danger alert-dismissible fade show w-25 mx-auto" role="alert"><strong>Error fetching results </strong><buttoni type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button></div>`
+                        `<div class="alert alert-danger alert-dismissible fade show w-25 mx-auto" role="alert">
+                            <strong>Error fetching results </strong>
+                            <buttoni type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                        </div>`
                     );
                 });
                 event.preventDefault();

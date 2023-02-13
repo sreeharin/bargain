@@ -53,7 +53,7 @@ class TestFlipkartScraper(unittest.TestCase):
         self.__fetch_data()
 
     def __fetch_data(self):
-        data = self.scraper.fetch_data(self.query)
+        data = self.scraper.fetch_data('vellathooval stephen')
         self.assertEqual(data.status_code, 200)
         with open('flipkart_tmp.html', 'w') as flipkart_tmp:
             flipkart_tmp.write(data.text)

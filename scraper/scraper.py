@@ -20,17 +20,23 @@ class Result:
         self.rating = rating
         self.url = url
 
+    def convert_tuple(self, item: tuple) -> str:
+        if item[0] is not None:
+            return ''.join(item)
+        return None
+
     def get(self) -> dict:
         # self.name, sef.img, self.price returns tuple hence `join` is used
         results_dict = {
                 'name': ''.join(self.name),
                 'img': ''.join(self.img),
-                'price': ''.join(self.price),
+                'price':  self.convert_tuple(self.price),
                 'reviews': self.reviews,
                 'rating': self.rating,
                 'url': self.url,
                 }
         return results_dict
+
 
 class FlipkartDivClass(IntFlag):
     '''Helper class for FlipkartScraper'''
@@ -72,7 +78,11 @@ class AmazonScraper(Scraper):
             result_name = result.find(
                     'span', class_='a-text-normal').string
             result_img = result.find(class_='s-image').get('src')
-            result_price = result.find(class_='a-price-whole').next_element
+            try:
+                # Some unavailable products don't list price
+                result_price = result.find('span', class_='a-price-whole').string
+            except AttributeError:
+                result_price = None
             result_url = result.find(
                     class_='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'
                     ).get('href')
@@ -117,11 +127,6 @@ class FlipkartScraper(Scraper):
                 DIV_CLASS3: FlipkartDivClass.CLASS_3,
                 }
 
-        # search_results = soup.find_all(class_=DIV_CLASS1, limit=limit)
-        # if search_results == []:
-        #     search_results = soup.find_all(class_=DIV_CLASS2, limit=limit)
-        #     selected_class = FlipkartDivClass.CLASS_2
-
         for div_class in [DIV_CLASS1, DIV_CLASS2, DIV_CLASS3]:
             search_results = soup.find_all(class_=div_class, limit=limit)
             if search_results != []:
@@ -149,13 +154,14 @@ class FlipkartScraper(Scraper):
                 ITEM_RATING = '_3LWZlK'
 
         for result in search_results:
+            item = result.find('a', class_=ITEM_CLASS)
+            result_name = item.get('title', None)
+            result_url = item.get('href', None)
+
             if selected_class == FlipkartDivClass.CLASS_3:
                 result_name = result.find('div', class_='_4rR01T').string
                 result_url = result.find('a', class_='_1fQZEK').get('href')
-            else:
-                item = result.find('a', class_=ITEM_CLASS)
-                result_name = item.get('title')
-                result_url = item.get('href')
+
             result_img = result.find('img', class_=ITEM_IMG).get('src')
             result_price = result.find(class_=ITEM_PRICE).get_text()
             result_rating = None
@@ -166,7 +172,7 @@ class FlipkartScraper(Scraper):
                             class_=ITEM_RATING).next_element
                 except AttributeError:
                     logging.error('No rating found for search query')
-                    continue
+                    pass
 
             if ITEM_REVIEWS:
                 try:
@@ -175,7 +181,7 @@ class FlipkartScraper(Scraper):
                             ).get_text().strip('(').strip(')')
                 except AttributeError:
                     logging.error('No reviews found for search query')
-                    continue
+                    pass
 
             items.append(Result(result_name, result_img, 
                                 result_price, result_reviews,
