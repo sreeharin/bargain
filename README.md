@@ -6,7 +6,7 @@ The same product will be selling for different price at Amazon.in and Flipkart.c
 
 
 ## Screenshots
-### Search result for **The Alchemist**
+### Search results for *The Alchemist*
 ![The Alchemist](https://user-images.githubusercontent.com/16078204/218992128-d17654f7-bb25-45b3-8ac1-aa2654615d3a.png)
 From the above screenshot we see that the lowest price listed on Flipkart is Rs. 178 whereas in Amazon the lowest price is Rs. 103. Clearly that is the best deal. 
 
