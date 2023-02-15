@@ -1,11 +1,13 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template
 from scraper.scraper import AmazonScraper, FlipkartScraper
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template('index.html'), 200
+
 
 @app.get('/best-deals/<query>')
 def best_deals(query):
@@ -29,6 +31,7 @@ def best_deals(query):
         results['flipkart'].append(result.get())
 
     return results, 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

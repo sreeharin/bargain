@@ -4,9 +4,10 @@ import sys
 sys.path.append('../')
 from app import app
 
+
 class TestApp(unittest.TestCase):
     def setUp(self):
-        self.client = app.test_client() 
+        self.client = app.test_client()
 
     def test_index(self):
         response = self.client.get('/')
@@ -20,4 +21,3 @@ class TestApp(unittest.TestCase):
                 list(json_data.keys()), ['amazon', 'flipkart'])
         self.assertEqual(len(json_data['amazon']), 10)
         self.assertEqual(len(json_data['flipkart']), 10)
-

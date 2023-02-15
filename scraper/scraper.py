@@ -1,32 +1,33 @@
-import re
 from urllib import parse
 from enum import IntFlag, auto
 import logging
 from bs4 import BeautifulSoup
 import requests
 
-logging.basicConfig(filename='scraper.log', encoding='utf-8',  
+logging.basicConfig(filename='scraper.log', encoding='utf-8',
                     format="%(asctime)s [%(levelname)s]: %(message)s",
                     level=logging.DEBUG)
 
+
 class Result:
-    def __init__(self, name: str, img: str, 
-                 price: str, reviews: str, 
+    def __init__(self, name: str, img: str,
+                 price: str, reviews: str,
                  rating: str, url: str):
         self.name = name,
         self.img = img,
-        self.price= price,
+        self.price = price,
         self.reviews = reviews
         self.rating = rating
         self.url = url
 
     def convert_tuple(self, item: tuple) -> str:
+        '''To make sure the first element in tuple is not None'''
         if item[0] is not None:
             return ''.join(item)
         return None
 
     def get(self) -> dict:
-        # self.name, sef.img, self.price returns tuple hence `join` is used
+        # self.name, sef.img returns tuple hence `join` is used
         results_dict = {
                 'name': ''.join(self.name),
                 'img': ''.join(self.img),
@@ -79,8 +80,9 @@ class AmazonScraper(Scraper):
                     'span', class_='a-text-normal').string
             result_img = result.find(class_='s-image').get('src')
             try:
-                # Some unavailable products don't list price
-                result_price = result.find('span', class_='a-price-whole').string
+                # Unavailable products don't list price
+                result_price = result.find(
+                        'span', class_='a-price-whole').string
             except AttributeError:
                 result_price = None
             result_url = result.find(
@@ -92,7 +94,7 @@ class AmazonScraper(Scraper):
             except AttributeError:
                 result_rating = None
                 logging.error('No rating found for search query')
-            try: 
+            try:
                 result_reviews = result.find(
                         class_='a-size-base s-underline-text'
                         ).get_text().strip('(').strip(')')
@@ -100,7 +102,7 @@ class AmazonScraper(Scraper):
                 result_reviews = None
                 logging.error('No reviews found for search query')
 
-            items.append(Result(result_name, result_img, 
+            items.append(Result(result_name, result_img,
                                 result_price, result_reviews,
                                 result_rating, result_url))
         return items
@@ -115,7 +117,7 @@ class FlipkartScraper(Scraper):
         logging.info('Returning results from Flipkart')
         items = []
 
-        # Unlike Amazon.in Flipkart.com has more than one css class 
+        # Unlike Amazon.in Flipkart.com has more than one css class
         # for showing results
         DIV_CLASS1 = '_1xHGtK _373qXS'
         DIV_CLASS2 = '_4ddWXP'
@@ -128,18 +130,19 @@ class FlipkartScraper(Scraper):
                 }
 
         for div_class in [DIV_CLASS1, DIV_CLASS2, DIV_CLASS3]:
+            # Checking which class is used for listing products
             search_results = soup.find_all(class_=div_class, limit=limit)
             if search_results != []:
                 selected_class = div_class_dict[div_class]
                 logging.info(f'Selecting class: {div_class} for Flipkart')
                 break
-        
+
         ITEM_PRICE = '_30jeq3'
         match selected_class:
             case FlipkartDivClass.CLASS_1:
                 # Generic items don't have reviews and rating
-                ITEM_CLASS = 'IRpwTa' 
-                ITEM_IMG = '_2r_T1I' 
+                ITEM_CLASS = 'IRpwTa'
+                ITEM_IMG = '_2r_T1I'
                 ITEM_REVIEWS = None
                 ITEM_RATING = None
             case FlipkartDivClass.CLASS_2:
@@ -183,8 +186,7 @@ class FlipkartScraper(Scraper):
                     logging.error('No reviews found for search query')
                     pass
 
-            items.append(Result(result_name, result_img, 
+            items.append(Result(result_name, result_img,
                                 result_price, result_reviews,
                                 result_rating, result_url))
         return items
-
