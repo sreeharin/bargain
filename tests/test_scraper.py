@@ -3,13 +3,14 @@ import unittest
 from random import choice
 
 sys.path.append('../')
-from scraper import scraper 
+from scraper import scraper
+
 
 class TestAmazonScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.AmazonScraper()
         self.query = choice(
-                ['trading books', 'men sunglasses', 
+                ['trading books', 'men sunglasses',
                  'casio watches for men', 'the alchemist',
                  'iphone', 'samsung watches'])
         self.__fetch_data()
@@ -22,7 +23,7 @@ class TestAmazonScraper(unittest.TestCase):
 
     def test_soup(self):
         with open('amazon_tmp.html', 'r') as amazon_data:
-            soup = self.scraper.soup(amazon_data.read().strip()) 
+            soup = self.scraper.soup(amazon_data.read().strip())
             self.assertNotEqual(soup, None)
             self.assertEqual(
                     soup.title.string.split(':')[0].strip(), 'Amazon.in')
@@ -34,7 +35,7 @@ class TestAmazonScraper(unittest.TestCase):
             self.assertGreater(len(items), 0)
             for item in items:
                 '''
-                Not testing reviews and rating since some products don't 
+                Not testing reviews and rating since some products don't
                 have reviews or ratings
                 '''
                 self.assertGreater(len(item.get()['name']), 0)
@@ -47,7 +48,7 @@ class TestFlipkartScraper(unittest.TestCase):
     def setUp(self):
         self.scraper = scraper.FlipkartScraper()
         self.query = choice(
-                ['trading books', 'men sunglasses', 
+                ['trading books', 'men sunglasses',
                  'casio watches for men', 'the alchemist',
                  'iphone', 'samsung watches'])
         self.__fetch_data()
@@ -60,7 +61,7 @@ class TestFlipkartScraper(unittest.TestCase):
 
     def test_soup(self):
         with open('flipkart_tmp.html', 'r') as flipkart_data:
-            soup = self.scraper.soup(flipkart_data.read().strip()) 
+            soup = self.scraper.soup(flipkart_data.read().strip())
             self.assertNotEqual(soup, None)
             self.assertEqual(
                     soup.title.string.split('|')[1].strip(), 'Flipkart.com')
@@ -72,11 +73,10 @@ class TestFlipkartScraper(unittest.TestCase):
             self.assertGreater(len(items), 0)
             for item in items:
                 '''
-                Not testing reviews and rating since some products don't 
+                Not testing reviews and rating since some products don't
                 have reviews or ratings
                 '''
                 self.assertGreater(len(item.get()['name']), 0)
                 self.assertGreater(len(item.get()['img']), 0)
                 self.assertGreater(len(item.get()['price']), 0)
                 self.assertGreater(len(item.get()['url']), 0)
-
